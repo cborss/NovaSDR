@@ -31,7 +31,7 @@ We offer more features as we only maintain support for Linux instead of the offi
 
 ## Screenshots
 
-The Aachen WebSDR:
+The Heppen WebSDR [using the new 2.0.0 Version]:
 ![Screenshot](/docs/websdr.PNG)
 
 (https://sdr-list.xyz)
