@@ -40,7 +40,7 @@ The Heppen WebSDR [using the new 2.0.0 Version]:
 Optional dependencies such as cuFFT or clFFT can be installed too.
 ### Ubuntu Prerequisites
 ```
-apt install build-essential cmake pkg-config meson libfftw3-dev libwebsocketpp-dev libflac++-dev zlib1g-dev libzstd-dev libboost-all-dev libopus-dev libliquid-dev git psmisc libclfft-dev ocl-icd-opencl-dev
+apt install build-essential cmake pkg-config meson libfftw3-dev libwebsocketpp-dev libflac++-dev zlib1g-dev libzstd-dev libboost-all-dev libopus-dev libliquid-dev git psmisc libclfft-dev ocl-icd-opencl-dev nlohmann-json3-dev
 ```
 
 ### Fedora Prerequisites
