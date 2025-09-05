@@ -1,43 +1,66 @@
+# NovaSDR Configuration — default template (curated)
+# This file provides conservative defaults that start reliably on most hosts.
+# Notes:
+# - NovaSDR serves the built UI from server.html_root (no external web server required).
+# - Required keys: input.sps, input.frequency, input.signal.
+# - Start with the defaults below; raise sps/fft_size only after confirming stability.
+# - On Raspberry Pi, keep accelerator="none" (GPU acceleration is not supported).
+
 [server]
-port=9002 # Server port
-html_root="frontend/dist/" # HTML files to be hosted
-otherusers=1 # Send where other users are listening, 0 to disable
-threads=1
+port = 9002
+host = "0.0.0.0"
+html_root = "frontend/dist/"
+otherusers = 1
+threads = 1
 
 [websdr]
-register_online=false # If the SDR should be registered on https://sdr-list.xyz then put it to true
-name="ChangeThis" # Name that is shown on https://sdr-list.xyz
-antenna="ChangeThis" # Antenna that is shown on https://sdr-list.xyz
-grid_locator="ChangeThis" # 4 or 6 length Grid Locatlr shown on https://sdr-list.xyz and for the Distance of FT8 Signals
-hostname="" # If you use ddns or something to host with a domain enter it here for https://sdr-list.xyz
-operator="ChangeThis" # Operator name displayed in server info
-email="example@test.com" # Contact email displayed in server info
-callsign_lookup_url="https://www.qrz.com/db/" # URL for callsign lookups
-chat_enabled=true # Enable/disable chat functionality
-
+register_online = false
+name = "ChangeThis"
+antenna = "ChangeThis"
+grid_locator = "ChangeThis"
+hostname = ""
+operator = "ChangeThis"
+email = "example@test.com"
+callsign_lookup_url = "https://www.qrz.com/db/"
+chat_enabled = true
 
 [limits]
-audio=1000
-waterfall=1000
-events=1000
+audio = 100
+waterfall = 200
+events = 200
 
 [input]
-sps=20000000 # Input Sample Rate
-fft_size=1048576 # FFT bins
-brightness_offset=0 # Waterfall brightness offset. Reduce to negative if you see black regions in the waterfall
-frequency=98000000 # Baseband frequency
-signal="iq" # real or iq
-accelerator="none" # Accelerator: none, cuda, opencl
-audio_sps=192000 # Audio Sample Rate
-audio_compression="flac" # flac or opus
-waterfall_size=2048
-waterfall_compression="zstd" # zstd or av1
-smeter_offset=0
+# Core stream settings
+sps = 2048000
+frequency = 100900000
+signal = "iq"
+
+# Performance and quality
+fft_size = 131072
+fft_threads = 1
+brightness_offset = 0
+audio_sps = 12000
+waterfall_size = 1024
+waterfall_compression = "zstd"
+audio_compression = "flac"
+accelerator = "none"
+smeter_offset = 0
 
 [input.driver]
-name="stdin" # Driver name: stdin
-format="u8" # Sample format: u8, s8, u16, s16, u32, s32, f32, f64
+name = "stdin"
+format = "u8"
 
 [input.defaults]
-frequency=93300000 # Default frequency to show user
-modulation="WBFM" # Default modulation
+frequency = 100900000
+modulation = "WBFM"
+
+# Change the device profile:
+# - RTL-SDR: format="u8", signal="iq", use rtl_sdr to pipe
+# - HackRF: format="s8", signal="iq", use hackrf_transfer to pipe
+# - Airspy HF+: format="s16", signal="iq", use airspy_rx to pipe
+# - SDRplay RSP1A: format="s16", signal="iq", use rx_sdr -d driver=sdrplay
+# - RX888 MK2 (real): format="s16", signal="real", use rx888_stream
+
+# If you see "Out of memory" or high CPU:
+# - reduce input.fft_size (e.g., 65536), then reduce input.sps
+# Keep waterfall_compression="zstd" and audio_compression="flac" unless you compiled extra codecs.
