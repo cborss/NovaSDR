@@ -190,6 +190,16 @@ npm run dev
 
 Open the Vite URL (e.g., http://localhost:5173). For production, use `npm run build` and point `server.html_root` to `frontend/dist/`.
 
+
+---
+
+## Documentation (GitHub Wiki)
+
+This repository includes wiki pages:
+- Home, Quick Start, Installation, Configuration, Devices, Operations,
+  Frontend, Deployment, Troubleshooting, FAQ, Contributing
+
+
 ---
 
 ## Contributing
