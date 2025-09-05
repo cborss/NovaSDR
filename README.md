@@ -1,240 +1,203 @@
-# PhantomSDR-Plus WebSDR v2.0.0
+<!--
+  NovaSDR README
+  Polished, scannable, and easy to follow. Hero image + badges + quick start.
+-->
 
-<div align="center">
-  <img src="/docs/websdr.PNG" alt="PhantomSDR-Plus WebSDR Interface" width="800"/>
-  <p><em>The Heppen WebSDR running PhantomSDR-Plus v2.0.0</em></p>
-</div>
+<h1 align="center">NovaSDR</h1>
+<p align="center"><i>formerly PhantomSDR‑Plus</i></p>
 
-## 🚀 What's New in v2.0.0
+<p align="center">
+  <img src="docs/websdr.PNG" alt="NovaSDR UI" width="840" />
+</p>
 
-### Complete UI Overhaul
-- **Fresh, modern look** - Complete visual redesign with improved usability
-- **Codebase cleanup** - App.svelte reduced from ~5,000 → ~1,800 lines
-- **Better component separation** - Improved code organization for easier maintenance
-- **Custom backgrounds** - Drop a background.jpg/png into /assets to skin the UI
+<p align="center">
+  <a href="https://en.cppreference.com/w/cpp/23"><img alt="C++23" src="https://img.shields.io/badge/C%2B%2B-23-00599C.svg"></a>
+  <a href="https://mesonbuild.com/"><img alt="Meson" src="https://img.shields.io/badge/build-meson%2Fninja-007ACC.svg"></a>
+  <a href="https://fftw.org/"><img alt="FFTW3f" src="https://img.shields.io/badge/FFT-FFTW3f-6A1B9A.svg"></a>
+  <a href="https://svelte.dev/"><img alt="Svelte" src="https://img.shields.io/badge/frontend-svelte%20%2B%20vite-FF3E00.svg"></a>
+</p>
 
-### New Features & Enhancements
-- **Custom AGC controls** - Fine-tune attack (0.1–100 ms) and release (10–1,000 ms) timing
-- **Smart Bands menu** - Auto-detects your ITU Region and shows the correct frequency bands
-- **Bookmark Import/Export** - Save and share your favorite frequencies
-- **Finetuning options** - Precise frequency control is back
-- **Built-in lookups** - Callsign lookup & frequency lookup integrated
-- **Advanced settings** - Settings & debug menus (AGC, Buffer, Custom AGC, etc.)
-- **Config-based UI** - Server-info section moved to config.toml (toggle chatbox without rebuilding)
-- **Smoother waterfall** - Improved waterfall drawing performance
-- **Debug tab** - Signal-strength history and other diagnostic stats
-- **Improved chat** - Chat history rewritten to eliminate crashes, and in a new json format.
-- **Auto-reconnect** - More robust WebSocket handling with automatic reconnection
+<p align="center">
+  A modern, web‑enabled SDR server with a fast Svelte frontend. Stream spectrum, waterfall, and audio to any browser using efficient FFT and compression pipelines, with optional GPU acceleration.
+</p>
 
-### Technical Improvements
-- **Thread-safety fixes** - Resolved threading issues in the chat system
-- **Error handling** - Error handling for file I/O operations
-- **Memory safety** - Added bounds-checking for improved stability
-- **Protocol refactor** - Cleaner protocol layer for easier future extensions
+<hr/>
 
+## Highlights
 
-## 📋 Overview
+- Fast C++ server with FFTW3f and multi‑level waterfall decimation
+- Responsive Svelte + Vite + Tailwind UI (mobile friendly)
+- Efficient compression: zstd waterfalls and FLAC audio (Opus/AV1 optional at build time)
+- Optional accelerators: CUDA (cuFFT), OpenCL (clFFT), or MKL
+- Device‑agnostic: read raw samples from stdin (rtl_sdr, hackrf_transfer, airspy_rx, rx_sdr, rx888_stream, …)
+- Optional station listing on https://sdr-list.xyz
 
-PhantomSDR-Plus is a high-performance WebSDR server that can handle hundreds of concurrent users. This enhanced version focuses on Linux optimization and provides significant improvements over the original PhantomSDR.
-
-### Key Features
-- **High Performance** - Handle 100+ users simultaneously on modest hardware
-- **Modern Interface** - Clean, responsive web interface with mobile support
-- **Advanced Demodulation** - Support for common modes with professional features
-- **Real-time Statistics** - Performance metrics and user analytics
-- **Band Plan Integration** - Interactive frequency band information
-
-## 🔧 System Requirements
-
-### Recommended Hardware
-- **CPU**: Modern multi-core processor (Intel i5/i7 or AMD Ryzen 5/7+)
-- **RAM**: 4GB+ (8GB+ recommended for high user counts)
-- **Storage**: 500MB for installation
-- **Network**: Stable internet connection for multi-user operation
-
-### Supported Operating Systems
-- **Ubuntu 22.04 LTS** (Primary support)
-- **Debian Bookworm** (Tested)
-- **Fedora** (Community support)
-
-
-## 📊 Performance Benchmarks
-
-| Hardware | Sample Rate | CPU Usage | User Capacity |
-|----------|-------------|-----------|---------------|
-| Ryzen 5 2600 | 32MHz IQ | 38-40% | 200+ users |
-| RX 580 (OpenCL) | 32MHz IQ | 28-35% | 300+ users |
-| Intel i5-6500T + OpenCL | 30MHz IQ | 10-12% | 100+ users |
-
-> 💡 **Tip**: GPU acceleration with OpenCL can significantly improve performance
-
-## 🏗️ Installation
-
-### Quick Start (Recommended)
-The easiest way to install PhantomSDR-Plus is to use the pre-built releases:
-
-1. **Install runtime dependencies** (Ubuntu 22.04+):
-```bash
-apt install libfftw3-bin libboost-iostreams1.83.0 libzstd1 libflac++10 \
-           libopus0 libliquid1 libcurl4 libgomp1 libgcc-s1 libstdc++6
-```
-
-2. **Install OpenCL support** (REQUIRED for pre-built releases):
-```bash
-apt install ocl-icd-libopencl1 libclfft2
-
-# For CPU-based OpenCL (if no GPU available):
-apt install pocl-opencl-icd
-
-# For NVIDIA GPUs:
-apt install nvidia-opencl-icd-xxx  # (where xxx is your driver version)
-
-# For AMD GPUs:
-apt install mesa-opencl-icd
-```
-
-3. **Download and extract the latest release**:
-   - Go to the [Releases](https://github.com/Steven9101/PhantomSDR-Plus/releases) page
-   - Download the latest `phantomsdr-plus-x.x.x-linux-x86_64.tar.gz`
-   - Extract: `tar -xzf phantomsdr-plus-*.tar.gz && cd phantomsdr-plus-*`
-
-4. **Configure for your SDR**:
-   - Copy `config.example.toml` to `config.toml`
-   - Edit the configuration for your specific SDR device
-   - See the [Wiki](https://github.com/Steven9101/PhantomSDR-Plus/wiki) for SDR-specific setup guides:
-     - RTL-SDR setup
-     - SDRPlay configuration  
-     - HackRF setup
-     - Other supported devices
-
-5. **Run the server with your SDR**:
-   - The server requires piped data input from your SDR
-   - See the [Wiki](https://github.com/Steven9101/PhantomSDR-Plus/wiki) for complete examples:
-     - RTL-SDR: `rtl_sdr -f 100000000 -s 2048000 - | ./spectrumserver --config config.toml`
-     - HackRF: `hackrf_transfer -r - -f 100000000 -s 20000000 | ./spectrumserver --config config.toml`
-     - SDRPlay: Use SDRPlay software to pipe data
-
-### Building from Source (Advanced)
-
-If you prefer to build from source or need to modify the code:
-
-#### Build Dependencies (Ubuntu/Debian)
-```bash
-apt install build-essential cmake pkg-config meson libfftw3-dev \
-           libwebsocketpp-dev libflac++-dev zlib1g-dev libzstd-dev \
-           libboost-all-dev libopus-dev libliquid-dev git psmisc \
-           libclfft-dev ocl-icd-opencl-dev nlohmann-json3-dev
-```
-
-#### Build Dependencies (Fedora)
-```bash
-dnf install g++ meson cmake fftw3-devel websocketpp-devel flac-devel \
-           zlib-devel boost-devel libzstd-devel opus-devel \
-           liquid-dsp-devel git
-```
-
-#### Compile
-```bash
-git clone --recursive https://github.com/Steven9101/PhantomSDR-Plus.git
-cd PhantomSDR-Plus
-meson build --optimization 3
-meson compile -C build
-```
-
-#### Automated Build Script
-```bash
-chmod +x *.sh
-sudo ./install.sh
-```
-
-> 🔄 **Important**: Restart your terminal after running install.sh
-
-## 🚀 Usage Examples
-
-### RTL-SDR
-```bash
-# For pre-built releases:
-rtl_sdr -f 145000000 -s 3200000 - | ./spectrumserver --config config.toml
-
-# For building from source:
-rtl_sdr -f 145000000 -s 3200000 - | ./build/spectrumserver --config config.toml
-```
-
-### HackRF
-```bash
-# For pre-built releases:
-rx_sdr -f 145000000 -s 20000000 -d driver=hackrf - | ./spectrumserver --config config.toml
-
-# For building from source:
-rx_sdr -f 145000000 -s 20000000 -d driver=hackrf - | ./build/spectrumserver --config config.toml
-```
-
-### Using Pre-built Configs
-We provide optimized configurations for various SDR devices:
-- `config-rsp1a.toml` - SDRPlay RSP1A
-- `config-rx888mk2.toml` - RX888 MK2
-- `config-airspyhf.toml` - Airspy HF+
-- `config.example.rtlsdr.toml` - RTL-SDR dongles
-- `config.example.hackrf.toml` - HackRF One
-
-## ⚙️ Configuration
-
-The server uses TOML configuration files. Key sections include:
-
-```toml
-[server]
-port = 9002
-html_root = "frontend/dist/"
-threads = 4
-
-[websdr]
-name = "Your WebSDR Name"
-operator = "Your Callsign"
-register_online = true  # Register on sdr-list.xyz
-chat_enabled = true     # Enable/disable chat (new in v2.0.0)
-callsign_lookup_url = "https://www.qrz.com/db/"
-
-[input]
-sps = 2048000
-frequency = 100000000
-accelerator = "opencl"  # Enable GPU acceleration if available
-```
-
-## WebSDR Network
-
-Join the PhantomSDR-Plus network at [sdr-list.xyz](https://sdr-list.xyz) to:
-- Discover other WebSDR stations
-- Share your WebSDR with the community
-- Access global spectrum monitoring
-
-## 🧪 Try the Preview
-
-Test the new v2.0.0 interface at the live preview: [websdr.heppen.be](http://websdr.heppen.be/)
-
-## Contributing
-
-We welcome contributions! Please:
-1. Fork the repository
-2. Create a feature branch
-3. Submit a pull request
-
-## 📞 Support
-
-- **Issues**: Report bugs on GitHub Issues
-- **Documentation**: Check the Wiki for detailed guides
-- **Community**: Join discussions in the [forum](https://phantomsdr.fun)
-
-## 🔄 Migration from v1.x
-
-Version 2.0.0 includes breaking changes. The codebase has diverged significantly from older versions.
-
-## 📜 License
-
-This project is licensed under the GPT License - see the LICENSE file for details.
-
+> Rename notice  
+> This project was previously called “PhantomSDR‑Plus”. It has been renamed to “NovaSDR” to avoid confusion with the separate “PhantomSDR” project. Legacy identifiers (e.g., “PhantomSDR+ v2.0.0”) may still appear in logs or internal modules and will be harmonized over time.
 
 ---
 
-<div align="center">
-  <strong>⭐ Star this repo if you find it useful! ⭐</strong>
-</div>
+## Supported hardware (via stdin piping)
+
+- RTL‑SDR (rtl_sdr)
+- HackRF One (hackrf_transfer)
+- Airspy HF+ (airspy_rx)
+- SDRplay RSP1A (rx_sdr with SoapySDR `driver=sdrplay`)
+- RX888 MK2 (vendor tools, e.g., rx888_stream)
+
+NovaSDR does not speak to hardware directly. You pipe raw samples to the server over stdin with the correct format.
+
+---
+
+## Quick start (Linux)
+
+1) Install toolchain and libraries (Debian/Ubuntu)
+
+```bash
+sudo apt update && sudo apt install -y \
+  build-essential meson ninja-build pkg-config git \
+  libfftw3-dev libzstd-dev libflac++-dev zlib1g-dev \
+  libboost-system-dev libboost-iostreams-dev libcurl4-openssl-dev
+```
+
+Optional accelerators:
+- OpenCL runtime + headers (e.g., `ocl-icd-opencl-dev`) and your vendor GPU runtime
+- CUDA toolkit for NVIDIA GPUs
+
+2) Build backend
+
+```bash
+meson setup build
+meson compile -C build
+```
+
+3) Build frontend
+
+```bash
+cd frontend
+npm install
+npm run build
+cd ..
+```
+
+4) Configure NovaSDR  
+Copy one of the curated examples to `config.toml` and adjust for your device:
+
+- `config.example.rtlsdr.toml`
+- `config.example.hackrf.toml`
+- `config-airspyhf.toml`
+- `config-rsp1a.toml`
+- `config-rx888mk2.toml`
+
+5) Run (examples below)  
+Open the UI at: `http://localhost:9002`
+
+---
+
+## Run examples (correct formats included)
+
+- RTL‑SDR (2.048 Msps, WBFM; format: `u8`)
+```bash
+rtl_sdr -g 48 -f 100900000 -s 2048000 - | ./build/spectrumserver --config config.toml
+```
+
+- HackRF (10 Msps, WBFM; format: `s8`)
+```bash
+hackrf_transfer -r - -f 100900000 -s 10000000 | ./build/spectrumserver --config config.toml
+```
+
+- Airspy HF+ (912 ksps, AM; format: `s16`)
+```bash
+airspy_rx -r - -f 648000 -s 912000 | ./build/spectrumserver --config config.toml
+```
+
+- SDRplay RSP1A (8 Msps, LSB; format: `s16`)
+```bash
+rx_sdr -d driver=sdrplay -f 7100000 -s 8000000 - | ./build/spectrumserver --config config.toml
+```
+
+- RX888 MK2 (real sampling 6 Msps; format: `s16`, `signal=real`)
+```bash
+rx888_stream -s 6000000 | ./build/spectrumserver --config config.toml
+```
+
+> Tip: Ultra‑high sample rates (e.g., 60 Msps) require powerful hardware, large FFT sizes, and likely GPU acceleration. Start lower and scale up.
+
+---
+
+## Configuration overview (matches server schema)
+
+NovaSDR reads a single TOML file. Keys below are exactly what the server uses internally.
+
+```toml
+[server]
+port = 9002                 # TCP port (default 9002)
+host = "0.0.0.0"            # Bind address (default 0.0.0.0)
+html_root = "frontend/dist/"# Static files (default "html/")
+otherusers = 1              # Show other listeners (1/0)
+threads = 1                 # Server worker threads
+
+[websdr]
+register_online = false     # Publish on https://sdr-list.xyz
+name = "NovaSDR"
+antenna = "ChangeThis"
+grid_locator = "AB12cd"
+hostname = ""               # Public domain if any
+operator = "ChangeThis"
+email = "example@test.com"
+callsign_lookup_url = "https://www.qrz.com/db/"
+chat_enabled = true
+
+[limits]
+audio = 100                 # Max concurrent connections
+waterfall = 200
+events = 200
+
+[input]
+sps = 2048000               # REQUIRED: input sample rate
+frequency = 100900000       # REQUIRED: center freq (Hz)
+signal = "iq"               # REQUIRED: "iq" or "real"
+fft_size = 131072
+fft_threads = 1
+brightness_offset = 0
+audio_sps = 12000
+waterfall_size = 1024
+waterfall_compression = "zstd"  # "zstd" (AV1 needs special build)
+audio_compression = "flac"      # "flac" (Opus needs special build)
+accelerator = "none"            # "none" | "opencl" | "cuda" | "mkl"
+smeter_offset = 0
+
+[input.driver]
+name = "stdin"
+format = "u8"               # u8 | s8 | u16 | s16 | cs16 | f32 | cf32 | f64
+
+[input.defaults]
+frequency = 100900000
+modulation = "WBFM"         # AM | SAM | FM | WBFM | USB | LSB
+```
+
+If you see “Out of memory” at startup, reduce `input.fft_size`.
+
+---
+
+## Frontend development
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Open the Vite URL (e.g., http://localhost:5173). For production, use `npm run build` and point `server.html_root` to `frontend/dist/`.
+
+---
+
+## Contributing
+
+Issues and PRs are welcome. Please keep config keys consistent with the server’s schema implemented in `src/spectrumserver.cpp` and follow the project formatting via `.clang-format`.
+
+---
+
+## License
+
+See `LICENSE`.
