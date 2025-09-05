@@ -1,50 +1,60 @@
-# PhantomSDR-Plus v2.0.0 Configuration Example - Airspy HF+
-# This configuration is optimized for Airspy HF+ Discovery
-# Usage: airspy_rx -r - -f 456000 -s 912000 | ./spectrumserver --config config.toml
+# NovaSDR Configuration — Airspy HF+ (curated)
+# Device: Airspy HF+ via airspy_rx
+# Capture format: s16 (16-bit signed IQ)
+#
+# Run example (AM @ 648 kHz, 912 ksps):
+#   airspy_rx -r - -f 648000 -s 912000 | ./build/spectrumserver --config config-airspyhf.toml
+#
+# Notes:
+# - Airspy HF+ offers several supported rates (e.g., 192k, 256k, 384k, 456k, 768k, 912k). 912k is a solid default.
+# - Keep waterfall zstd + FLAC audio; these do not require extra codecs.
+# - Avoid "opus" and "av1" unless NovaSDR was compiled with those codecs.
+# - If CPU/memory is tight, reduce input.fft_size first, then input.sps.
 
 [server]
-port=81 # Server port for web interface (different from other configs)
-html_root="frontend/dist/" # Path to web interface files
-otherusers=1 # Show other users' listening frequencies (1=enabled, 0=disabled)
-threads=2 # Number of processing threads (Airspy HF+ benefits from multiple threads)
+port = 9002
+host = "0.0.0.0"
+html_root = "frontend/dist/"
+otherusers = 1
+threads = 1
 
 [websdr]
-register_online=false # Register WebSDR on https://sdr-list.xyz (true=public, false=private)
-name="My Airspy HF+ WebSDR" # Station name displayed on sdr-list.xyz and web interface
-antenna="HF Magnetic Loop" # Antenna description shown to users
-grid_locator="JO20KV" # 4 or 6 character grid locator for distance calculations
-hostname="" # Domain name for public access (leave empty for local use)
-operator="Your Callsign" # Operator name/callsign displayed in station info
-email="your.email@example.com" # Contact email for station information
-callsign_lookup_url="https://www.qrz.com/db/" # URL for callsign lookups in server info panel
-chat_enabled=true # Enable/disable chat functionality (new in v2.0.0)
+register_online = false
+name = "NovaSDR (Airspy HF+)"
+antenna = "HF Magnetic Loop"
+grid_locator = "JO62"
+hostname = ""
+operator = "ChangeThis"
+email = "example@test.com"
+callsign_lookup_url = "https://www.qrz.com/db/"
+chat_enabled = true
 
 [limits]
-# Connection limits to prevent server overload
-audio=1000 # Maximum audio connections
-waterfall=1000 # Maximum waterfall connections
-events=1000 # Maximum event connections
+audio = 100
+waterfall = 200
+events = 200
 
 [input]
-# Airspy HF+ optimized settings - HF/VHF with excellent dynamic range
-sps=912000 # Input sample rate (Airspy HF+: 192k, 256k, 384k, 456k, 768k, 912k)
-fft_size=131072 # FFT bins for spectral analysis (good resolution for HF)
-fft_threads=2 # Number of FFT processing threads
-brightness_offset=-6 # Waterfall brightness adjustment (Airspy HF+ typically darker)
-frequency=456000 # Center frequency in Hz (456kHz for MW/LW coverage)
-signal="iq" # Signal type: "iq" for complex samples (Airspy HF+ provides IQ)
-accelerator="opencl" # GPU acceleration recommended for better performance
-audio_sps=44100 # Audio sample rate for demodulated output (CD quality)
-audio_compression="flac" # Audio compression: "flac" (lossless only)
-waterfall_size=2048 # Waterfall display width in pixels
-waterfall_compression="zstd" # Waterfall compression: "zstd" only
-smeter_offset=-12 # S-meter calibration offset in dB (Airspy HF+ specific)
+# Core parameters
+sps = 912000                 # 912 ksps (good default for HF+)
+frequency = 648000           # Center frequency (Hz)
+signal = "iq"                # Airspy HF+ outputs IQ
+
+# Performance and quality
+fft_size = 131072            # Reduce if OOM or high CPU (e.g., 65536)
+fft_threads = 1
+brightness_offset = 0        # Adjust (-6 .. +6) if WF is too dark/bright
+audio_sps = 44100
+waterfall_size = 1024
+waterfall_compression = "zstd"
+audio_compression = "flac"
+accelerator = "none"         # "none" | "opencl" | "cuda" | "mkl" (only if compiled)
+smeter_offset = 0
 
 [input.driver]
-name="stdin" # Input driver: "stdin" for piped data from airspy_rx
-format="s16" # Sample format for Airspy HF+: s16 (16-bit signed integers)
+name = "stdin"
+format = "s16"               # airspy_rx outputs s16 IQ
 
 [input.defaults]
-# Default settings when users first connect
-frequency=648000 # Default frequency to display (648kHz - MW band)
-modulation="AM" # Default modulation mode: AM for MW broadcast band
+frequency = 648000
+modulation = "AM"            # AM | SAM | FM | WBFM | USB | LSB
